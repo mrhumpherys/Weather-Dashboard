@@ -9,6 +9,7 @@ var humidityEl = document.querySelector("#humidity");
 var windEl = document.querySelector("#wind");
 var uvEl = document.querySelector("#uv");
 var uvBtnEL = document.querySelector("#uvBtn");
+var fiveDayEl = document.querySelectorAll("#fiveDay");
 
 
 let searchedCities = JSON.parse(localStorage.getItem("city")) || [];
@@ -35,7 +36,7 @@ var getCity = function() {
         getWeather(searchCity)
         
     } else {
-        
+        errorFunc();
         pTimeEl.innerHTML = "Please enter a city.";
     }
 }
@@ -45,6 +46,18 @@ var storeCity = function(city) {
     localStorage.setItem("city", JSON.stringify(searchedCities));
 }
 
+var errorFunc = function() {
+    pTimeEl.innerText = "";
+    pTimeEl.innerText = "Your search did not return a valid city. Please try again.";
+    tempEl.innerText = "";
+    humidityEl.innerText = "";
+    windEl.innerText = "";
+    uvEl.innerText = "";
+    
+    for ( var i = 0; i < fiveDayEl.length; i++) {
+        fiveDayEl[i].innerHTML = "";
+    };
+}
 
 var getWeather = function(searchCity) {
     var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + searchCity + "&units=imperial&appid=b7401d7f8ad6b97299577e666bd17a73"
@@ -53,8 +66,8 @@ var getWeather = function(searchCity) {
         if (response.ok) {
             response.json().then(function(data) {
                 
-                displayBtn(searchCity);
-                storeCity(searchCity);
+                
+                
                 var currentDate = new Date(data.dt*1000);
                 var day = currentDate.getDate();
                 var month = currentDate.getMonth() + 1;
@@ -94,14 +107,13 @@ var getWeather = function(searchCity) {
                 fetch(apiUrl3).then(function(response3) {
                     response3.json().then(function(data3) {
                         fiveTitleEl.innerText = "5-Day Forcast:"
-                        var fiveDayEl = document.querySelectorAll("#fiveDay");
+                        
                         
                         for (var i=0; i < fiveDayEl.length; i++) {
                             fiveDayEl[i].innerHTML = "";
                             fiveDayEl[i].classList = "bg-primary col rounded text-white card ml-3 p-1"
                             var fiveDayIndex = i*8 +4;
                             var fiveDayDate = new Date(data3.list[fiveDayIndex].dt * 1000);
-                            console.log(fiveDayDate);
                             var fDay = fiveDayDate.getDate();
                             var fMonth = fiveDayDate.getMonth() + 1;
                             var fYear = fiveDayDate.getFullYear();
@@ -125,12 +137,21 @@ var getWeather = function(searchCity) {
                     })
                 })
             });
+            if (searchedCities.includes(searchCity)) {
+                return;
+            } else {
+                displayBtn(searchCity);
+                storeCity(searchCity);
+            }
         } else {
-            pTimeEl.innerText = "";
-            pTimeEl.innerText = "Your search did not return a valid city. Please try again.";
-            fiveDayEl.innerHTML = "";
+            errorFunc();
+            
         }
     })
+    .catch(function(error) {
+        errorFunc();
+        pTimeEl.innerText = "Unable to connect to OpenWeather. Please try again."
+    });
 }
 
 var buttonClickHandler = function(event) {
