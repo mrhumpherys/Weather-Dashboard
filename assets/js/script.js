@@ -109,11 +109,14 @@ var getWeather = function(searchCity) {
                         fiveTitleEl.innerText = "5-Day Forcast:"
                         
                         
+                        
                         for (var i=0; i < fiveDayEl.length; i++) {
                             fiveDayEl[i].innerHTML = "";
                             fiveDayEl[i].classList = "bg-primary col rounded text-white card ml-3 p-1"
-                            var fiveDayIndex = i*8 +4;
+                            var fiveDayIndex = i*8 + 6;
+                            
                             var fiveDayDate = new Date(data3.list[fiveDayIndex].dt * 1000);
+                            
                             var fDay = fiveDayDate.getDate();
                             var fMonth = fiveDayDate.getMonth() + 1;
                             var fYear = fiveDayDate.getFullYear();
@@ -123,6 +126,7 @@ var getWeather = function(searchCity) {
                             fiveDayEl[i].appendChild(fiveDateEl);
                             var fIcon = document.createElement("img");
                             fIcon.classList = "card-img";
+                            
                             fIcon.setAttribute("src", "https://openweathermap.org/img/w/" + data3.list[fiveDayIndex].weather[0].icon + ".png");
                             fiveDayEl[i].appendChild(fIcon);
                             fTemp = document.createElement("p");
